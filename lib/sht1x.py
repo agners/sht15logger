@@ -1,6 +1,5 @@
 from machine import Pin
 import utime
-import pycom
 
 class SHT1X:
 
@@ -43,15 +42,10 @@ class SHT1X:
         self.data = data
         self.vcc = vcc
 
-        self.gnd.mode(Pin.OUT)
-        self.vcc.mode(Pin.OUT)
-        self.sck.mode(Pin.OUT)
-        self.data.mode(Pin.OPEN_DRAIN)
-
-        self.gnd.pull(Pin.PULL_DOWN)
-        self.vcc.pull(Pin.PULL_UP)
-        self.sck.pull(Pin.PULL_DOWN)
-        self.data.pull(None)
+        self.gnd.init(Pin.OUT_PP, Pin.PULL_DOWN)
+        self.vcc.init(Pin.OUT_PP, Pin.PULL_UP)
+        self.sck.init(Pin.OUT_PP, Pin.PULL_UP)
+        self.data.init(Pin.OUT_OD, Pin.PULL_NONE)
 
         self.sleep()
 
