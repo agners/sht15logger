@@ -89,7 +89,6 @@ class SHT1X:
         readout = (msb << 8) + lsb
 
         crc = self.__read_byte()
-        utime.sleep_ms(11)
         computed_crc = self.__crc(command, msb, lsb)
         if crc != computed_crc:
             print('crc: {}, computed: {}'.format(crc, computed_crc))
