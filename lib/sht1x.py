@@ -63,7 +63,7 @@ class SHT1X:
 
     def temperature(self):
         readout = self.__send_command(self.MEASURE_T)
-        return readout/2**14 * 163.8 - 40
+        return (readout - 3965) / 100.0
 
 
     def humidity(self, temperature=25):
