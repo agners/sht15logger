@@ -74,6 +74,26 @@ class SHT1X:
         return min(humidity, 100)
 
 
+    def read_register(self):
+        command = self.READ_STATUS_REGISTER
+        self.__command_start()
+        self.__write_byte(command)
+        self.__ack_bit(0)
+
+        # data should be low when ready to read
+        if self.data() == True:
+            raise self.AckException
+
+        readout = self.__read_byte()
+
+        crc = self.__read_byte()
+        computed_crc = self.__crc(command, readout, None)
+        if crc != computed_crc:
+            print('crc: {}, computed: {}'.format(crc, computed_crc))
+            raise self.CRCException
+
+        return readout
+
     def __send_command(self, command):
         self.__command_start()
         self.__write_byte(command)
@@ -100,8 +120,9 @@ class SHT1X:
         crc = self.CRC_TABLE[command]
         crc ^= msb
         crc = self.CRC_TABLE[crc]
-        crc ^= lsb
-        crc = self.CRC_TABLE[crc]
+        if lsb is not None:
+            crc ^= lsb
+            crc = self.CRC_TABLE[crc]
         reversed_crc = 0
         for pos in range(8):
             bit = crc & 1<<pos != 0
